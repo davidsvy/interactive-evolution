@@ -8,10 +8,12 @@ gui_args:
   img_height: 175
   selected_color: "cornflower blue"
   unselected_color: "floral white"
+  colab: False
 
 ea_args:
   n_population: 20
   n_new: 2
   p_mutation: 0.5
   batch_size: 4
+  use_gui: True
   seed: null

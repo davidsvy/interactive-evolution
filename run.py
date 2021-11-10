@@ -26,6 +26,16 @@ def parse_args():
     config['gui_args'].pop('img_height', None)
     config['gui_args']['img_size'] = img_size
 
+    try:
+        import google.colab
+        colab = True
+    except:
+        colab = False
+
+    config['gui_args']['colab'] = colab
+    if colab:
+        config['ea_args']['use_gui'] = False
+
     return config
 
 

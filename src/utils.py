@@ -21,3 +21,7 @@ def torch_to_pil(images):
     images_pil = [Image.fromarray(img, 'RGB') for img in images_np]
 
     return images_pil
+
+
+def torch_to_np(images):
+    return ((images.clamp(min=-1, max=1) + 1) / 2).permute(0, 2, 3, 1).cpu().detach().numpy()

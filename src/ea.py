@@ -1,6 +1,6 @@
 from src.gan import get_model
-from src.gui import GUI
-from src.utils import set_seed, torch_to_pil
+from src.gui import GUI, PLT_GUI
+from src.utils import set_seed, torch_to_pil, torch_to_np
 import torch
 import tqdm
 
@@ -8,11 +8,12 @@ import tqdm
 class Evolutionary_algorithm(object):
 
     def __init__(self, gan_args={}, gui_args={}, n_population=20, n_new=2,
-                 p_mutation=0.5, batch_size=4, seed=None):
+                 p_mutation=0.5, batch_size=4, use_gui=True, seed=None):
 
         self.model = get_model(**gan_args)
         self.device = self.model.device
-        self.gui = GUI(**gui_args)
+        self.use_gui = use_gui
+        self.gui = GUI(**gui_args) if use_gui else PLT_GUI(**gui_args)
         self.n_population = n_population
         self.d_population = self.model.config.latentVectorDim
         self.n_new = n_new
@@ -46,14 +47,19 @@ class Evolutionary_algorithm(object):
 
     def fitness_function(self, population):
         images_tr = []
-        for step in tqdm.tqdm(range(0, population.shape[0], self.batch_size)):
+        wraper = (lambda x: x) if population.is_cuda else tqdm.tqdm
+        for step in wraper(range(0, population.shape[0], self.batch_size)):
             with torch.no_grad():
                 images_batch = self.model.test(
                     population[step: step + self.batch_size])
             images_tr.append(images_batch)
 
         images_tr = torch.cat(images_tr).to(self.device)
-        reset_flag, exit_flag, mask = self.gui.render(torch_to_pil(images_tr))
+        if self.use_gui:
+            images = torch_to_pil(images_tr)
+        else:
+            images = torch_to_np(images_tr)
+        reset_flag, exit_flag, mask = self.gui.render(images)
 
         return reset_flag, exit_flag, mask
 
