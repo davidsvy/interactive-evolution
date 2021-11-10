@@ -1,0 +1,17 @@
+gan_args:
+  model: "PGAN"
+  dataset: "celebAHQ-512"
+  use_gpu: "True"
+
+gui_args:
+  img_width: 175
+  img_height: 175
+  selected_color: "cornflower blue"
+  unselected_color: "floral white"
+
+ea_args:
+  n_population: 20
+  n_new: 2
+  p_mutation: 0.5
+  batch_size: 4
+  seed: null
